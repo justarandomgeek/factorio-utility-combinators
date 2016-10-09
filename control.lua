@@ -69,6 +69,7 @@ end
 
 local function onPlayerCreated(event)
   local i = event.player_index
+  local p = game.players[i]
   global.playerframes[i]=stringsig(p.name)
   global.playerframes[i][1].count= p.connected and 1 or 0
   global.playerframes[i][2].count= p.admin and 1 or 0
