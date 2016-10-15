@@ -20,6 +20,11 @@ local function stringsig(s)
   local s = string.upper(s or "")
   local letters = {}
   local i=1
+
+  if #s>31 then
+    s=s:sub(1,31)
+  end
+
   while s do
     local c
     if #s > 1 then
