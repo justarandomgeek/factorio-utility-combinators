@@ -1,0 +1,11 @@
+{
+  "name": "bonus-combinator",
+  "version": "0.15.0",
+  "factorio_version": "0.15",
+  "title": "Bonus Combinator",
+  "author": "justarandomgeek",
+  "homepage": "",
+  "contact": "justarandomgeek@gmail.com",
+  "description": "A combinator that reports information about the current force bonuses (stack size, logistics/trash slot counts).",
+  "dependencies": ["base >= 0.15.0"]
+}
