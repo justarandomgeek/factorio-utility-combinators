@@ -1,11 +1,11 @@
 {
   "name": "player-combinator",
-  "version": "0.15.3",
-  "factorio_version": "0.15",
+  "version": "0.17.0",
+  "factorio_version": "0.17",
   "title": "Player Combinator",
   "author": "justarandomgeek",
   "homepage": "",
   "contact": "justarandomgeek@gmail.com",
   "description": "A combinator that reports information about the players in the game.",
-  "dependencies": ["base >= 0.14.0", "signalstrings >= 0.14.1"]
+  "dependencies": ["base >= 0.17.0", "signalstrings >= 0.17.0"]
 }
