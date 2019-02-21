@@ -21,7 +21,7 @@ local function UpdateResearch(event)
         }
       end
 
-      if remote.interfaces['signalstrings'] and remote.interfaces['signalstrings']['string_to_signals'] then
+      if remote.interfaces['signalstrings'] then
         newframes[forcename] = remote.call('signalstrings','string_to_signals',force.current_research.name, extras)
       else
         newframes[forcename] = extras

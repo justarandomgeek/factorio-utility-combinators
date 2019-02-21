@@ -1,11 +1,11 @@
 {
   "name": "research-combinator",
-  "version": "0.16.0",
-  "factorio_version": "0.16",
+  "version": "0.17.0",
+  "factorio_version": "0.17",
   "title": "Research Combinator",
   "author": "justarandomgeek",
   "homepage": "",
   "contact": "justarandomgeek@gmail.com",
   "description": "A combinator that reports information about the current research.",
-  "dependencies": ["base >= 0.16.0", "?signalstrings >= 0.14.1"]
+  "dependencies": ["base >= 0.17.0", "?signalstrings >= 0.17.0"]
 }
