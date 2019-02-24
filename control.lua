@@ -8,8 +8,7 @@ local function UpdateBonuses()
       {index=3,count=force.stack_inserter_capacity_bonus  ,signal={name="signal-J",type="virtual"}},
       {index=4,count=force.character_logistic_slot_count  ,signal={name="signal-L",type="virtual"}},
       {index=5,count=force.character_trash_slot_count     ,signal={name="signal-T",type="virtual"}},
-      {index=6,count=force.quickbar_count                 ,signal={name="signal-Q",type="virtual"}},
-      {index=7,count=force.maximum_following_robot_count  ,signal={name="signal-F",type="virtual"}},
+      {index=6,count=force.maximum_following_robot_count  ,signal={name="signal-F",type="virtual"}},
 
     }
   end
