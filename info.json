@@ -6,6 +6,6 @@
   "author": "justarandomgeek",
   "homepage": "",
   "contact": "justarandomgeek@gmail.com",
-  "description": "A set of general utility cominators. Includes: Location Combinators, Bonus Combinators",
-  "dependencies": ["base >= 0.17.0"]
+  "description": "A set of general utility cominators. Includes: Location Combinators, Bonus Combinators, Player Combinators",
+  "dependencies": ["base >= 0.17.0", "?signalstrings >= 0.17.0"]
 }
