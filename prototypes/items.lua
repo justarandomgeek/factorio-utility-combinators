@@ -2,8 +2,11 @@ data:extend{
   {
     type = "item",
     name = "location-combinator",
-    icon = "__base__/graphics/icons/constant-combinator.png",
-    icon_size = 32,
+    icons = {
+      { icon = "__base__/graphics/icons/constant-combinator.png", icon_size = 32, },
+      { icon = "__base__/graphics/icons/signal/signal_X.png", icon_size = 32, scale = 0.5, shift = {-8,0} },
+      { icon = "__base__/graphics/icons/signal/signal_Y.png", icon_size = 32, scale = 0.5, shift = {8,0} },
+    },
     subgroup = "circuit-network",
     place_result="location-combinator",
     order = "b[combinators]-d[location-combinator]",
@@ -12,8 +15,10 @@ data:extend{
   {
     type = "item",
     name = "bonus-combinator",
-    icon = "__base__/graphics/icons/constant-combinator.png",
-    icon_size = 32,
+    icons = {
+      { icon = "__base__/graphics/icons/constant-combinator.png", icon_size = 32, },
+      { icon = "__base__/graphics/icons/signal/signal_B.png", icon_size = 32, scale = 0.6, },
+    },
     subgroup = "circuit-network",
     place_result="bonus-combinator",
     order = "b[combinators]-d[bonus-combinator]",
@@ -22,8 +27,10 @@ data:extend{
   {
     type = "item",
     name = "player-combinator",
-    icon = "__base__/graphics/icons/constant-combinator.png",
-    icon_size = 32,
+    icons = {
+      { icon = "__base__/graphics/icons/constant-combinator.png", icon_size = 32, },
+      { icon = "__base__/graphics/icons/signal/signal_P.png", icon_size = 32, scale = 0.6, },
+    },
     subgroup = "circuit-network",
     place_result="player-combinator",
     order = "b[combinators]-d[player-combinator]",
@@ -32,8 +39,10 @@ data:extend{
   {
     type = "item",
     name = "research-combinator",
-    icon = "__base__/graphics/icons/constant-combinator.png",
-    icon_size = 32,
+    icons = {
+      { icon = "__base__/graphics/icons/constant-combinator.png", icon_size = 32, },
+      { icon = "__base__/graphics/icons/signal/signal_R.png", icon_size = 32, scale = 0.6, },
+    },
     subgroup = "circuit-network",
     place_result="research-combinator",
     order = "b[combinators]-d[research-combinator]",
