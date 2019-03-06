@@ -2,7 +2,7 @@ data:extend{
   {
     type = "recipe",
     name = "location-combinator",
-    enabled = "true",
+    enabled = "false",
     ingredients =
     {
       {"constant-combinator", 1},
@@ -13,7 +13,7 @@ data:extend{
   {
     type = "recipe",
     name = "bonus-combinator",
-    enabled = "true",
+    enabled = "false",
     ingredients =
     {
       {"constant-combinator", 1},
@@ -24,7 +24,7 @@ data:extend{
   {
     type = "recipe",
     name = "player-combinator",
-    enabled = "true",
+    enabled = "false",
     ingredients =
     {
       {"constant-combinator", 1},
@@ -35,7 +35,7 @@ data:extend{
   {
     type = "recipe",
     name = "research-combinator",
-    enabled = "true",
+    enabled = "false",
     ingredients =
     {
       {"constant-combinator", 1},
