@@ -1,11 +1,11 @@
 {
-  "name": "location-combinator",
+  "name": "utility-combinators",
   "version": "0.17.0",
   "factorio_version": "0.17",
-  "title": "Location Combinator",
+  "title": "Utility Combinators",
   "author": "justarandomgeek",
   "homepage": "",
   "contact": "justarandomgeek@gmail.com",
-  "description": "A Combinator that outputs it's location.",
+  "description": "A set of general utility cominators. Includes: Location Combinators, Bonus Combinators",
   "dependencies": ["base >= 0.17.0"]
 }
