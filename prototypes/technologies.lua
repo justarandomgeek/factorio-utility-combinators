@@ -8,7 +8,7 @@ local unlocks = {
 
 if data.raw["technology"]["circuit-network-2"] then
   for _,unlock in pairs(unlocks) do
-    table.insert( data.raw["technology"]["circuit-network"].effects, unlock)
+    table.insert( data.raw["technology"]["circuit-network-2"].effects, unlock)
   end
 else
   data:extend({
