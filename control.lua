@@ -12,13 +12,13 @@ function UpdateBonuses()
     global.bonusframe[forcename] = {
       --{index=1,count=0,signal={name="signal-grey",type="virtual"}}
 
-      {index=1,count=force.worker_robots_storage_bonus    ,signal={name="signal-R",type="virtual"}},
-      {index=2,count=force.inserter_stack_size_bonus      ,signal={name="signal-I",type="virtual"}},
-      {index=3,count=force.stack_inserter_capacity_bonus  ,signal={name="signal-J",type="virtual"}},
-      {index=4,count=force.character_logistic_slot_count  ,signal={name="signal-L",type="virtual"}},
-      {index=5,count=force.character_trash_slot_count     ,signal={name="signal-T",type="virtual"}},
-      {index=6,count=force.maximum_following_robot_count  ,signal={name="signal-F",type="virtual"}},
-
+      {index=1,count=force.worker_robots_storage_bonus           ,signal={name="signal-R",type="virtual"}},
+      {index=2,count=force.inserter_stack_size_bonus             ,signal={name="signal-I",type="virtual"}},
+      {index=3,count=force.stack_inserter_capacity_bonus         ,signal={name="signal-J",type="virtual"}},
+      {index=4,count=force.character_logistic_slot_count         ,signal={name="signal-L",type="virtual"}},
+      {index=5,count=force.character_trash_slot_count            ,signal={name="signal-T",type="virtual"}},
+      {index=6,count=force.maximum_following_robot_count         ,signal={name="signal-F",type="virtual"}},
+      {index=7,count=force.mining_drill_productivity_bonus * 100 ,signal={name="signal-P",type="virtual"}},
     }
   end
 end
