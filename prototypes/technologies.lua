@@ -4,6 +4,7 @@ local unlocks = {
   {type = "unlock-recipe", recipe = "location-combinator"},
   {type = "unlock-recipe", recipe = "player-combinator"},
   {type = "unlock-recipe", recipe = "research-combinator"},
+  {type = "unlock-recipe", recipe = "large-combinator"},
 }
 
 if data.raw["technology"]["circuit-network-2"] then
