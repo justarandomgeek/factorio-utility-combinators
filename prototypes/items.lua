@@ -48,4 +48,16 @@ data:extend{
     order = "b[combinators]-d[research-combinator]",
     stack_size = 50,
   },
+  {
+    type = "item",
+    name = "large-combinator",
+    icons = {
+      { icon = "__base__/graphics/icons/constant-combinator.png", icon_size = 32, },
+      { icon = "__base__/graphics/icons/signal/signal_L.png", icon_size = 32, scale = 0.6, },
+    },
+    subgroup = "circuit-network",
+    place_result="large-combinator",
+    order = "b[combinators]-d[large-combinator]",
+    stack_size = 50,
+  },
   }
