@@ -43,4 +43,15 @@ data:extend{
     },
     result="research-combinator",
   },
+  {
+    type = "recipe",
+    name = "large-combinator",
+    enabled = "false",
+    ingredients =
+    {
+      {"constant-combinator", 1},
+      {"electronic-circuit", 1},
+    },
+    result="large-combinator",
+  },
 }
