@@ -27,3 +27,7 @@ With no input, outputs the total player count (signal-blue) and total online pla
 ## Research Combinator
 
 Outputs the science packs required for the current research, the number of reserach cycles (signal-black), and the current progress in percent (signal-grey). If the Signal Strings Library is installed, also outputs the name of the current research.
+
+## Large Combinator
+
+A normal constant combinator with 1000 slots for signals.
