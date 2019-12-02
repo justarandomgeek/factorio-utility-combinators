@@ -180,7 +180,7 @@ function onConfigChanged(data)
   if data.mod_changes and data.mod_changes["utility-combinators"] then
    --If my data has changed, rebuild all my tables.
    -- OnInit has to rebuild thigns anyway to catch deprecated single-combinator mods
-   OnInit()
+   onInit()
   end
 end
 
