@@ -1,3 +1,4 @@
+if script.active_mods['debugadapter'] then require('__debugadapter__/debugadapter.lua') end
 function get_signal_from_set(signal,set)
   for _,sig in pairs(set) do
     if sig.signal.type == signal.type and sig.signal.name == signal.name then
