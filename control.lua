@@ -1,5 +1,6 @@
 if script.active_mods['debugadapter'] then require('__debugadapter__/debugadapter.lua') end
-function get_signal_from_set(signal,set)
+
+local function get_signal_from_set(signal,set)
   for _,sig in pairs(set) do
     if sig.signal.type == signal.type and sig.signal.name == signal.name then
       return sig.count
@@ -8,7 +9,7 @@ function get_signal_from_set(signal,set)
   return nil
 end
 
-function UpdateBonuses()
+local function UpdateBonuses()
   for forcename,force in pairs(game.forces) do
     global.bonusframe[forcename] = {
       --{index=1,count=0,signal={name="signal-grey",type="virtual"}}
@@ -24,7 +25,7 @@ function UpdateBonuses()
   end
 end
 
-function UpdateResearch()
+local function UpdateResearch()
   local newframes = {}
   for forcename,force in pairs(game.forces) do
 
@@ -62,7 +63,7 @@ function UpdateResearch()
   global.researchframe = newframes
 end
 
-function playerFrame(player)
+local function playerFrame(player)
   local extras = {
     {index=1,count=player.connected and 1 or 0 ,signal={name="signal-green",type="virtual"}},
     {index=2,count=player.admin and 1 or 0 ,signal={name="signal-red",type="virtual"}},
@@ -74,7 +75,7 @@ function playerFrame(player)
   end
 end
 
-function onForceResearchChange(event)
+local function onForceResearchChange(event)
   UpdateBonuses()
   UpdateResearch()
 
@@ -94,8 +95,7 @@ function onForceResearchChange(event)
   end
 end
 
-function onBuilt(event)
-  local entity=event.created_entity
+local function onBuilt(entity)
   if entity.name == "bonus-combinator" then
     entity.operable = false
 
@@ -177,7 +177,7 @@ local function onInit()
   end
 end
 
-function onConfigChanged(data)
+local function onConfigChanged(data)
   if data.mod_changes and data.mod_changes["utility-combinators"] then
    --If my data has changed, rebuild all my tables.
    -- OnInit has to rebuild thigns anyway to catch deprecated single-combinator mods
@@ -185,7 +185,7 @@ function onConfigChanged(data)
   end
 end
 
-function onPlayerChanged(event)
+local function onPlayerChanged(event)
   local i = event.player_index
   local p = game.players[i]
   global.playerframes[i]=playerFrame(p)
@@ -231,6 +231,18 @@ end
 
 script.on_event({defines.events.on_research_started, defines.events.on_research_finished, defines.events.on_force_created,defines.events.on_forces_merging}, onForceResearchChange)
 script.on_event(defines.events.on_tick, onTick)
-script.on_event({defines.events.on_built_entity, defines.events.on_robot_built_entity}, onBuilt)
 script.on_event({defines.events.on_player_created, defines.events.on_player_joined_game, defines.events.on_player_left_game, defines.events.on_player_promoted, defines.events.on_player_demoted}, onPlayerChanged)
 script.on_init(onInit)
+script.on_configuration_changed(onConfigChanged)
+
+local filters = {
+  {filter="name",name="bonus-combinator"},
+  {filter="name",name="location-combinator"},
+  {filter="name",name="player-combinator"},
+  {filter="name",name="research-combinator"},
+}
+script.on_event(defines.events.on_built_entity, function(event) onBuilt(event.created_entity) end, filters)
+script.on_event(defines.events.on_robot_built_entity, function(event) onBuilt(event.created_entity) end, filters)
+script.on_event(defines.events.script_raised_built, function(event) onBuilt(event.entity) end)
+script.on_event(defines.events.script_raised_revive, function(event) onBuilt(event.entity) end)
+script.on_event(defines.events.on_entity_cloned, function(event) onBuilt(event.destination) end)
