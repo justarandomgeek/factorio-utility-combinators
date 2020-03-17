@@ -10,7 +10,6 @@ Outputs various force bonus levels:
 |force.worker_robots_storage_bonus            | signal-R |
 |force.inserter_stack_size_bonus              | signal-I |
 |force.stack_inserter_capacity_bonus          | signal-J |
-|force.character_logistic_slot_count          | signal-L |
 |force.character_trash_slot_count             | signal-T |
 |force.quickbar_count                         | signal-Q |
 |force.maximum_following_robot_count          | signal-F |
