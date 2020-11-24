@@ -78,14 +78,16 @@ local function onForceResearchChange(event)
 
   for n,rcc in pairs(global.researchcc) do
     if rcc.entity.valid and rcc.control.valid then
-      rcc.control.parameters={enabled=true,parameters=global.researchframe[rcc.entity.force.name] or {}}
+      rcc.control.enabled = true
+      rcc.control.parameters=global.researchframe[rcc.entity.force.name]
     else
       global.researchcc[n] = nil
     end
   end
   for n,bcc in pairs(global.bonuscc) do
     if bcc.entity.valid and bcc.control.valid then
-      bcc.control.parameters={enabled=true,parameters=global.bonusframe[bcc.entity.force.name] or {}}
+      bcc.control.enabled = true
+      bcc.control.parameters=global.bonusframe[bcc.entity.force.name]
     else
       global.bonuscc[n] = nil
     end
@@ -97,17 +99,18 @@ local function onBuilt(entity)
     entity.operable = false
 
     local control = entity.get_or_create_control_behavior()
-    control.parameters={enabled=true,parameters=global.bonusframe[entity.force.name] or {}}
+    control.enabled = true 
+    control.parameters=global.bonusframe[entity.force.name]
     global.bonuscc[entity.unit_number] = {entity=entity,control=control}
 
   elseif entity.name == "location-combinator" then
     local control = entity.get_or_create_control_behavior()
     control.enabled=true
-    control.parameters={parameters={
+    control.parameters={
       {index=1,count=math.floor(entity.position.x),signal={name="signal-X",type="virtual"}},
       {index=2,count=math.floor(entity.position.y),signal={name="signal-Y",type="virtual"}},
       {index=3,count=entity.surface.index,signal={name="signal-Z",type="virtual"}}
-    }}
+    }
     entity.operable=false
   elseif entity.name == "player-combinator" then
 
@@ -117,7 +120,8 @@ local function onBuilt(entity)
     entity.operable = false
     local control = entity.get_or_create_control_behavior()
     global.researchcc[entity.unit_number] = {entity=entity,control=control}
-    control.parameters={enabled=true,parameters=global.researchframe[entity.force.name] or {}}
+    control.enabled = true
+    control.parameters=global.researchframe[entity.force.name]
   end
 end
 
@@ -201,9 +205,11 @@ function onTick()
       local signals = pcc.entity.get_merged_signals() or {}
       local req = get_signal_from_set({name="signal-grey",type="virtual"},signals) or 0
       if req == 0 then
-        pcc.control.parameters={enabled=true,parameters=global.globalplayerframe}
+        pcc.control.enabled = true
+        pcc.control.parameters=global.globalplayerframe
       else
-        pcc.control.parameters={enabled=true,parameters=global.playerframes[req] or {}}
+        pcc.control.enabled = true
+        pcc.control.parameters=global.playerframes[req]
       end
     else
       global.playercc[n] = nil
@@ -218,7 +224,8 @@ function onTick()
 
     for n,rcc in pairs(global.researchcc) do
       if rcc.entity.valid and rcc.control.valid then
-        rcc.control.parameters={enabled=true,parameters=global.researchframe[rcc.entity.force.name] or {}}
+        rcc.control.enabled = true
+        rcc.control.parameters=global.researchframe[rcc.entity.force.name]
       else
         global.researchcc[n] = nil
       end
