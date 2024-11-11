@@ -1,11 +1,14 @@
 {
   "name": "utility-combinators",
-  "version": "1.1.1",
-  "factorio_version": "1.1",
+  "version": "2.0.0",
+  "factorio_version": "2.0",
   "title": "Utility Combinators",
   "author": "justarandomgeek",
   "homepage": "",
   "contact": "justarandomgeek@gmail.com",
-  "description": "A set of general utility cominators. Includes: Location Combinators, Bonus Combinators, Player Combinators, Research Combinators",
-  "dependencies": ["base", "?signalstrings"]
+  "description": "A set of general utility combinators. Includes: Location Combinators, Bonus Combinators, Research Combinators",
+  "dependencies": ["base"],
+  "package": {
+    "sync_portal_details": true
+  }
 }

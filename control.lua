@@ -1,252 +1,188 @@
-local function get_signal_from_set(signal,set)
-  for _,sig in pairs(set) do
-    if sig.signal.type == signal.type and sig.signal.name == signal.name then
-      return sig.count
-    end
+---@param signal SignalFilter.0
+---@param value int32
+---@return LogisticFilter
+local function signal_value(signal, value)
+  value = math.min(math.max(value, -0x80000000), 0x7fffffff)
+  return {
+    value = {
+      type = signal.type or "item",
+      name = signal.name,
+      quality = signal.quality or "normal",
+      comparator = "=",
+    },
+    min = value,
+  }
+end
+
+---@param target UCControl
+---@param filters LogisticFilter[]
+---@return boolean
+local function write_control(target, filters)
+  local entity = target.entity
+  if not entity.valid then return false end
+
+  local control = target.control
+  if not (control and control.valid) then
+    control = entity.get_or_create_control_behavior() --[[@as LuaConstantCombinatorControlBehavior]]
+    target.control = control
   end
-  return nil
+
+  --TODO: check/force exactly one unnamed section
+  control.enabled = true
+  control.sections[1].filters=filters or {}
+  return true
 end
 
 local function UpdateBonuses()
-  for forcename,force in pairs(game.forces) do
-    global.bonusframe[forcename] = {
-      --{index=1,count=0,signal={name="signal-grey",type="virtual"}}
-
-      {index=1,count=force.worker_robots_storage_bonus           ,signal={name="signal-R",type="virtual"}},
-      {index=2,count=force.inserter_stack_size_bonus             ,signal={name="signal-I",type="virtual"}},
-      {index=3,count=force.stack_inserter_capacity_bonus         ,signal={name="signal-J",type="virtual"}},
-      {index=4,count=force.character_trash_slot_count            ,signal={name="signal-T",type="virtual"}},
-      {index=5,count=force.maximum_following_robot_count         ,signal={name="signal-F",type="virtual"}},
-      {index=6,count=force.mining_drill_productivity_bonus * 100 ,signal={name="signal-P",type="virtual"}},
+  for _,force in pairs(game.forces) do
+    storage.bonusframe[force.index] = {
+      signal_value({name="lab",type="item"},force.laboratory_productivity_bonus),
+      signal_value({name="logistic-robot",type="item"},force.worker_robots_storage_bonus),
+      signal_value({name="fast-inserter",type="item"},force.inserter_stack_size_bonus),
+      signal_value({name="bulk-inserter",type="item"},force.bulk_inserter_capacity_bonus),
+      signal_value({name="turbo-transport-belt",type="item"},force.belt_stack_size_bonus),
+      signal_value({name="toolbelt-equipment",type="item"},force.character_inventory_slots_bonus),
+      signal_value({name="big-mining-drill",type="item"},force.mining_drill_productivity_bonus * 100),
+      signal_value({name="locomotive",type="item"},force.train_braking_force_bonus),
+      signal_value({name="signal-heart",type="virtual"},force.character_health_bonus),
+      signal_value({name="signal-B",type="virtual"},force.character_build_distance_bonus),
+      signal_value({name="signal-D",type="virtual"},force.character_item_drop_distance_bonus),
+      signal_value({name="signal-R",type="virtual"},force.character_resource_reach_distance_bonus),
+      signal_value({name="signal-I",type="virtual"},force.character_item_pickup_distance_bonus),
+      signal_value({name="signal-L",type="virtual"},force.character_loot_pickup_distance_bonus),
+      signal_value({name="signal-F",type="virtual"},force.maximum_following_robot_count),
     }
   end
 end
 
 local function UpdateResearch()
+  ---@type {[integer]:LogisticFilter[]}
   local newframes = {}
-  for forcename,force in pairs(game.forces) do
+  for _,force in pairs(game.forces) do
 
     if force.current_research then
-      local extras = {
-        {index=1,
-        count=math.floor(game.forces[forcename].research_progress * 100),
-        signal={name="signal-grey",type="virtual"}},
-        {index=2,
-        count=force.current_research.research_unit_count,
-        signal={name="signal-white",type="virtual"}},
-
+      ---@type LogisticFilter[]
+      local frame = {
+        signal_value({name="signal-info",type="virtual"},math.floor(game.forces[force.index].research_progress * 100)),
+        signal_value({name="signal-stack-size",type="virtual"},force.current_research.research_unit_count),
+        signal_value({name="signal-T",type="virtual"},force.current_research.research_unit_energy),
       }
 
-      for i,item in pairs(force.current_research.research_unit_ingredients) do
-        extras[#extras+1] = {
-          index  = #extras+1,
-          count  = item.amount,
-          signal = {name=item.name,type=item.type},
-        }
+      for _,item in pairs(force.current_research.research_unit_ingredients) do
+        frame[#frame+1] = signal_value(item--[[@as SignalFilter.0]],item.amount)
       end
-
-      if remote.interfaces['signalstrings'] then
-        newframes[forcename] = remote.call('signalstrings','string_to_signals',force.current_research.name, extras)
-      else
-        newframes[forcename] = extras
-      end
-
-    else
-      newframes[forcename] = {
-        {index=1,count=0,signal={name="signal-grey",type="virtual"}}
-      }
+      newframes[force.index] = frame
     end
   end
-  global.researchframe = newframes
+  storage.researchframe = newframes
 end
 
-local function playerFrame(player)
-  local extras = {
-    {index=1,count=player.connected and 1 or 0 ,signal={name="signal-green",type="virtual"}},
-    {index=2,count=player.admin and 1 or 0 ,signal={name="signal-red",type="virtual"}},
-  }
-  if remote.interfaces['signalstrings'] then
-    return remote.call('signalstrings','string_to_signals',player.name, extras)
-  else
-    return extras
-  end
-end
-
-local function onForceResearchChange(event)
+script.on_event({
+  defines.events.on_research_started,
+  defines.events.on_research_finished,
+  defines.events.on_research_moved,
+  defines.events.on_research_cancelled,
+  defines.events.on_research_reversed,
+  defines.events.on_force_created,
+  defines.events.on_forces_merging
+  }, function()
   UpdateBonuses()
   UpdateResearch()
 
-  for n,rcc in pairs(global.researchcc) do
-    if rcc.entity.valid and rcc.control.valid then
-      rcc.control.enabled = true
-      rcc.control.parameters=global.researchframe[rcc.entity.force.name]
-    else
-      global.researchcc[n] = nil
+  for n,rcc in pairs(storage.researchcc) do
+    if not (rcc.entity.valid and write_control(rcc, storage.researchframe[rcc.entity.force.index])) then
+      storage.researchcc[n] = nil
     end
   end
-  for n,bcc in pairs(global.bonuscc) do
-    if bcc.entity.valid and bcc.control.valid then
-      bcc.control.enabled = true
-      bcc.control.parameters=global.bonusframe[bcc.entity.force.name]
-    else
-      global.bonuscc[n] = nil
+  for n,bcc in pairs(storage.bonuscc) do
+    if not (bcc.entity.valid and write_control(bcc, storage.bonusframe[bcc.entity.force.index])) then
+      storage.bonuscc[n] = nil
     end
   end
-end
+end)
 
-local function onBuilt(entity)
-  if entity.name == "bonus-combinator" then
+---@type {[string]:fun(entity:LuaEntity)}
+local onBuilt = {
+  ["bonus-combinator"] = function(entity)
     entity.operable = false
-
-    local control = entity.get_or_create_control_behavior()
-    control.enabled = true 
-    control.parameters=global.bonusframe[entity.force.name]
-    global.bonuscc[entity.unit_number] = {entity=entity,control=control}
-
-  elseif entity.name == "location-combinator" then
-    local control = entity.get_or_create_control_behavior()
-    control.enabled=true
-    control.parameters={
-      {index=1,count=math.floor(entity.position.x),signal={name="signal-X",type="virtual"}},
-      {index=2,count=math.floor(entity.position.y),signal={name="signal-Y",type="virtual"}},
-      {index=3,count=entity.surface.index,signal={name="signal-Z",type="virtual"}}
-    }
+    local bcc = {entity=entity}
+    storage.bonuscc[entity.unit_number] = bcc
+    write_control(bcc, storage.bonusframe[entity.force.index])
+  end,
+  ["location-combinator"] = function(entity)
     entity.operable=false
-  elseif entity.name == "player-combinator" then
-
-    local control = entity.get_or_create_control_behavior()
-    global.playercc[entity.unit_number] = {entity=entity,control=control}
-  elseif entity.name == "research-combinator" then
+    local lcc = {entity=entity}
+    write_control(lcc, {
+      signal_value({name="signal-X",type="virtual"},math.floor(entity.position.x)),
+      signal_value({name="signal-Y",type="virtual"},math.floor(entity.position.y)),
+      signal_value({name="signal-Z",type="virtual"},entity.surface.index),
+    })
+  end,
+  ["research-combinator"] = function(entity)
     entity.operable = false
-    local control = entity.get_or_create_control_behavior()
-    global.researchcc[entity.unit_number] = {entity=entity,control=control}
-    control.enabled = true
-    control.parameters=global.researchframe[entity.force.name]
-  end
-end
+    local rcc = {entity=entity}
+    storage.researchcc[entity.unit_number] = rcc
+    write_control(rcc, storage.researchframe[entity.force.index])
+  end,
+}
 
-local function onInit()
-  global = {
-    bonuscc = {
-      --[unit_number] = {entity, control},
-    },
-    bonusframe = {
-      --[force.name] = ccdata,
-    },
+---@class (exact) UCControl
+---@field entity LuaEntity
+---@field control? LuaConstantCombinatorControlBehavior
 
-    playercc = {
-      --[unit_number] = {entity, control},
-    },
-    playerframes = {
-      --[player.index] = ccdata,
-    },
+local function on_init()
+  ---@class (exact) UCStorage
+  ---@field bonuscc {[integer]:UCControl} unit_number -> entity,control
+  ---@field bonusframe {[integer]:LogisticFilter[]} forceid -> data
+  ---@field researchcc {[integer]:UCControl} unit_number -> entity,control
+  ---@field researchframe {[integer]:LogisticFilter[]} forceid -> data
+  storage = {
+    bonuscc = {},
+    bonusframe = {},
 
-    researchcc = {
-      --[unit_number] = {entity, control},
-    },
-    researchframe = {
-      --[force.name] = ccdata,
-    },
-
+    researchcc = {},
+    researchframe = {},
   }
 
-  -- bonus combinator
   UpdateBonuses()
-
-  -- player combinator
-  for i,p in pairs(game.players) do
-    global.playerframes[i]=playerFrame(p)
-  end
-  global.globalplayerframe={
-    {index=1,count=#game.connected_players,signal={name="signal-green",type="virtual"}},
-    {index=2,count=#game.players,signal={name="signal-blue",type="virtual"}},
-  }
-
-  -- research combinator
   UpdateResearch()
 
   -- index existing combinators (init and config changed to capture from deprecated mods as well)
   -- and re-index the world
   for _,surf in pairs(game.surfaces) do
-    -- re-index all nixies. non-nixie lamps will be ignored by onPlaceEntity
-    for _,ent in pairs(
-      surf.find_entities_filtered{name =
-      {"bonus-combinator", "location-combinator", "player-combinator", "research-combinator",}}
-    ) do
-      onBuilt({created_entity=ent})
+    for _,entity in pairs(surf.find_entities_filtered{name = {"bonus-combinator", "location-combinator", "research-combinator",}}) do
+      local handler = onBuilt[entity.name]
+      if handler then
+        handler(entity)
+      end
     end
   end
 end
 
-local function onConfigChanged(data)
+script.on_init(on_init)
+script.on_configuration_changed(function(data)
   if data.mod_changes and data.mod_changes["utility-combinators"] then
-   --If my data has changed, rebuild all my tables.
-   -- OnInit has to rebuild thigns anyway to catch deprecated single-combinator mods
-   onInit()
+    on_init()
   end
-end
+end)
 
-local function onPlayerChanged(event)
-  local i = event.player_index
-  local p = game.players[i]
-  global.playerframes[i]=playerFrame(p)
-
-  global.globalplayerframe={
-    {index=1,count=#game.connected_players,signal={name="signal-green",type="virtual"}},
-    {index=2,count=#game.players,signal={name="signal-blue",type="virtual"}},
-  }
-end
-
-function onTick()
-  --player
-  for n,pcc in pairs(global.playercc) do
-    if pcc.entity.valid and pcc.control.valid then
-
-      local signals = pcc.entity.get_merged_signals() or {}
-      local req = get_signal_from_set({name="signal-grey",type="virtual"},signals) or 0
-      if req == 0 then
-        pcc.control.enabled = true
-        pcc.control.parameters=global.globalplayerframe
-      else
-        pcc.control.enabled = true
-        pcc.control.parameters=global.playerframes[req]
-      end
-    else
-      global.playercc[n] = nil
+script.on_nth_tick(60, function()
+  UpdateResearch()
+  for n,rcc in pairs(storage.researchcc) do
+    if not (rcc.entity.valid and write_control(rcc, storage.researchframe[rcc.entity.force.index])) then
+      storage.researchcc[n] = nil
     end
   end
+end)
 
-  --research
-  --TODO: move to an on_nth_tick
-  if game.tick % 60 == 0 then
-
-    UpdateResearch()
-
-    for n,rcc in pairs(global.researchcc) do
-      if rcc.entity.valid and rcc.control.valid then
-        rcc.control.enabled = true
-        rcc.control.parameters=global.researchframe[rcc.entity.force.name]
-      else
-        global.researchcc[n] = nil
+script.on_event(defines.events.on_script_trigger_effect, function (event)
+  if event.effect_id == "utility-combinator-created" then
+    local entity = event.cause_entity
+    if entity then
+      local handler = onBuilt[entity.name]
+      if handler then
+        handler(entity)
       end
     end
   end
-end
-
-script.on_event({defines.events.on_research_started, defines.events.on_research_finished, defines.events.on_force_created,defines.events.on_forces_merging}, onForceResearchChange)
-script.on_event(defines.events.on_tick, onTick)
-script.on_event({defines.events.on_player_created, defines.events.on_player_joined_game, defines.events.on_player_left_game, defines.events.on_player_promoted, defines.events.on_player_demoted}, onPlayerChanged)
-script.on_init(onInit)
-script.on_configuration_changed(onConfigChanged)
-
-local filters = {
-  {filter="name",name="bonus-combinator"},
-  {filter="name",name="location-combinator"},
-  {filter="name",name="player-combinator"},
-  {filter="name",name="research-combinator"},
-}
-script.on_event(defines.events.on_built_entity, function(event) onBuilt(event.created_entity) end, filters)
-script.on_event(defines.events.on_robot_built_entity, function(event) onBuilt(event.created_entity) end, filters)
-script.on_event(defines.events.script_raised_built, function(event) onBuilt(event.entity) end)
-script.on_event(defines.events.script_raised_revive, function(event) onBuilt(event.entity) end)
-script.on_event(defines.events.on_entity_cloned, function(event) onBuilt(event.destination) end)
+end)

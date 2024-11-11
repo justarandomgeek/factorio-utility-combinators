@@ -11,7 +11,7 @@ data:extend{
     place_result="location-combinator",
     order = "b[combinators]-d[location-combinator]",
     stack_size = 50,
-  },
+  }--[[@as data.ItemPrototype]],
   {
     type = "item",
     name = "bonus-combinator",
@@ -23,19 +23,7 @@ data:extend{
     place_result="bonus-combinator",
     order = "b[combinators]-d[bonus-combinator]",
     stack_size = 50,
-  },
-  {
-    type = "item",
-    name = "player-combinator",
-    icons = {
-      { icon = "__base__/graphics/icons/constant-combinator.png", icon_size = 64, },
-      { icon = "__base__/graphics/icons/signal/signal_P.png", icon_size = 64, scale = 0.3, },
-    },
-    subgroup = "circuit-network",
-    place_result="player-combinator",
-    order = "b[combinators]-d[player-combinator]",
-    stack_size = 50,
-  },
+  }--[[@as data.ItemPrototype]],
   {
     type = "item",
     name = "research-combinator",
@@ -47,5 +35,5 @@ data:extend{
     place_result="research-combinator",
     order = "b[combinators]-d[research-combinator]",
     stack_size = 50,
-  },
+  }--[[@as data.ItemPrototype]],
   }

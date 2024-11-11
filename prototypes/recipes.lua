@@ -1,46 +1,21 @@
-data:extend{
-  {
-    type = "recipe",
-    name = "location-combinator",
-    enabled = "false",
-    ingredients =
+---@param name string
+local function make_recipe(name)
+  data:extend{
     {
-      {"constant-combinator", 1},
-      {"electronic-circuit", 1},
-    },
-    result="location-combinator",
-  },
-  {
-    type = "recipe",
-    name = "bonus-combinator",
-    enabled = "false",
-    ingredients =
-    {
-      {"constant-combinator", 1},
-      {"electronic-circuit", 1},
-    },
-    result="bonus-combinator",
-  },
-  {
-    type = "recipe",
-    name = "player-combinator",
-    enabled = "false",
-    ingredients =
-    {
-      {"constant-combinator", 1},
-      {"electronic-circuit", 1},
-    },
-    result="player-combinator",
-  },
-  {
-    type = "recipe",
-    name = "research-combinator",
-    enabled = "false",
-    ingredients =
-    {
-      {"constant-combinator", 1},
-      {"electronic-circuit", 1},
-    },
-    result="research-combinator",
-  },
-}
+      type = "recipe",
+      name = name,
+      enabled = false,
+      ingredients = {
+        {type="item", name="constant-combinator", amount=1},
+        {type="item", name="electronic-circuit", amount=1},
+      },
+      results = {
+        {type="item", name=name, amount=1}
+      },
+    }--[[@as data.RecipePrototype]]
+  }
+end
+
+make_recipe("location-combinator")
+make_recipe("bonus-combinator")
+make_recipe("research-combinator")
