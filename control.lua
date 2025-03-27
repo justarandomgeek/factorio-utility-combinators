@@ -3,7 +3,7 @@
 ---@return LogisticFilter
 local function signal_value(signal, value)
   local quality = "normal"
-  if script.active_mods["quality"] then
+  if script.active_mods["quality"] and signal.quality then
       quality = signal.quality
   end
 
