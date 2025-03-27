@@ -5,7 +5,7 @@ local function signal_value(signal, value)
   value = math.min(math.max(value, -0x80000000), 0x7fffffff)
 
   local quality = "normal"
-  if mods["quality"] then
+  if script.active_mods["quality"] then
       quality = signal.quality
   end
 
