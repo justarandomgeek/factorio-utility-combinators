@@ -2,8 +2,6 @@
 ---@param value int32
 ---@return LogisticFilter
 local function signal_value(signal, value)
-  value = math.min(math.max(value, -0x80000000), 0x7fffffff)
-
   local quality = "normal"
   if script.active_mods["quality"] then
       quality = signal.quality
@@ -11,12 +9,12 @@ local function signal_value(signal, value)
 
   return {
     value = {
-      type = signal.type or "item",
-      name = signal.name,
-      quality = quality,
+      type       = signal.type or "item",
+      name       = signal.name,
+      quality    = quality,
       comparator = "=",
     },
-    min = value,
+    min = math.min(math.max(value, -0x80000000), 0x7fffffff),
   }
 end
 
