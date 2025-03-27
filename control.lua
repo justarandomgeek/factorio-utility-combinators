@@ -3,11 +3,17 @@
 ---@return LogisticFilter
 local function signal_value(signal, value)
   value = math.min(math.max(value, -0x80000000), 0x7fffffff)
+
+  local quality = "normal"
+  if mods["quality"] then
+      quality = signal.quality
+  end
+
   return {
     value = {
       type = signal.type or "item",
       name = signal.name,
-      quality = signal.quality or "normal",
+      quality = quality,
       comparator = "=",
     },
     min = value,
@@ -29,7 +35,7 @@ local function write_control(target, filters)
 
   --TODO: check/force exactly one unnamed section
   control.enabled = true
-  control.sections[1].filters=filters or {}
+  control.sections[1].filters = filters or {}
   return true
 end
 

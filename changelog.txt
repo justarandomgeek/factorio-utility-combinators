@@ -1,0 +1,10 @@
+---------------------------------------------------------------------------------------------------
+Version: 2.0.1
+Date: 27-03-2025
+  Changes:
+    - added script for easy building of release packages, just run ./scripts/build_package.py
+    - added support for quality mod (optional)
+    - set minimum version for "base"
+    - added this changelog.txt (add older versions below this record, newer above)
+    - added .gitattributes
+--------------------------------------------------------------------------------------------------
