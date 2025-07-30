@@ -1,4 +1,4 @@
----@param signal SignalFilter.0
+---@param signal SignalID
 ---@param value int32
 ---@return LogisticFilter
 local function signal_value(signal, value)
@@ -69,7 +69,7 @@ local function UpdateResearch()
       }
 
       for _,item in pairs(force.current_research.research_unit_ingredients) do
-        frame[#frame+1] = signal_value(item--[[@as SignalFilter.0]],item.amount)
+        frame[#frame+1] = signal_value(item--[[@as SignalID]], item.amount)
       end
       newframes[force.index] = frame
     end
