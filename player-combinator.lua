@@ -219,7 +219,7 @@ local mode_handlers = {
       outputs[#outputs+1] = { signal = self.afk_time, copy_count_from_input = false, constant = player.afk_time }
     end
     if self.last_online_ticks_ago then
-      outputs[#outputs+1] = { signal = self.last_online_ticks_ago, copy_count_from_input = false, constant = player.last_online - game.ticks_played }
+      outputs[#outputs+1] = { signal = self.last_online_ticks_ago, copy_count_from_input = false, constant = (game.ticks_played-player.last_online)-1 }
     end
     if self.online_time then
       outputs[#outputs+1] = { signal = self.online_time, copy_count_from_input = false, constant = player.online_time }
