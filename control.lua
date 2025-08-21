@@ -1,3 +1,5 @@
+local new_pcomb = require('player-combinator')
+
 ---@param signal SignalID
 ---@param value int32
 ---@return LogisticFilter
@@ -124,6 +126,9 @@ local onBuilt = {
     storage.researchcc[entity.unit_number] = rcc
     write_control(rcc, storage.researchframe[entity.force.index])
   end,
+  ["player-combinator"] = function (entity)
+    storage.playercombs[entity.unit_number] = new_pcomb(entity)
+  end
 }
 
 ---@class (exact) UCControl
@@ -136,12 +141,14 @@ local function on_init()
   ---@field bonusframe {[integer]:LogisticFilter[]} forceid -> data
   ---@field researchcc {[integer]:UCControl} unit_number -> entity,control
   ---@field researchframe {[integer]:LogisticFilter[]} forceid -> data
+  ---@field playercombs {[integer]:PlayerCombinator}
   storage = {
     bonuscc = {},
     bonusframe = {},
 
     researchcc = {},
     researchframe = {},
+    playercombs = {},
   }
 
   UpdateBonuses()
@@ -150,7 +157,7 @@ local function on_init()
   -- index existing combinators (init and config changed to capture from deprecated mods as well)
   -- and re-index the world
   for _,surf in pairs(game.surfaces) do
-    for _,entity in pairs(surf.find_entities_filtered{name = {"bonus-combinator", "location-combinator", "research-combinator",}}) do
+    for _,entity in pairs(surf.find_entities_filtered{name = {"bonus-combinator", "location-combinator", "research-combinator", "player-combinator"}}) do
       local handler = onBuilt[entity.name]
       if handler then
         handler(entity)
@@ -173,6 +180,18 @@ script.on_nth_tick(60, function()
       storage.researchcc[n] = nil
     end
   end
+end)
+
+script.on_event(defines.events.on_tick, function()
+  for unit_number, pcomb in pairs(storage.playercombs) do
+    if pcomb:valid() then
+      pcomb:on_tick()
+    else
+      pcomb:destroy()
+      storage.playercombs[unit_number] = nil
+    end
+  end
+  --gui.on_tick()
 end)
 
 script.on_event(defines.events.on_script_trigger_effect, function (event)
