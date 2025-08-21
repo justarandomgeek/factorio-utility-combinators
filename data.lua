@@ -1,74 +1,29 @@
----@param name string
-local function make_cc_entity(name)
-  local entity = table.deepcopy(data.raw["constant-combinator"]["constant-combinator"])
-  entity.name = name
-  entity.minable.result = name
-  entity.created_effect = {
-    type = "direct",
-    action_delivery = {
-      type = "instant",
-      source_effects = {
-        {
-          type = "script",
-          effect_id = "utility-combinator-created",
-        },
-      }
-    }
-  }
-  data:extend{entity}
-end
-
-make_cc_entity("location-combinator")
-make_cc_entity("bonus-combinator")
-make_cc_entity("research-combinator")
-
-data:extend{
-  {
-    type = "item",
-    name = "location-combinator",
-    icons = {
-      { icon = "__base__/graphics/icons/constant-combinator.png", icon_size = 64, },
-      { icon = "__base__/graphics/icons/signal/signal_X.png", icon_size = 64, scale = 0.25, shift = {-8,0} },
-      { icon = "__base__/graphics/icons/signal/signal_Y.png", icon_size = 64, scale = 0.25, shift = {8,0} },
-    },
-    subgroup = "circuit-network",
-    place_result="location-combinator",
-    order = "b[combinators]-d[location-combinator]",
-    stack_size = 50,
-  }--[[@as data.ItemPrototype]],
-  {
-    type = "item",
-    name = "bonus-combinator",
-    icons = {
-      { icon = "__base__/graphics/icons/constant-combinator.png", icon_size = 64, },
-      { icon = "__base__/graphics/icons/signal/signal_B.png", icon_size = 64, scale = 0.3, },
-    },
-    subgroup = "circuit-network",
-    place_result="bonus-combinator",
-    order = "b[combinators]-d[bonus-combinator]",
-    stack_size = 50,
-  }--[[@as data.ItemPrototype]],
-  {
-    type = "item",
-    name = "research-combinator",
-    icons = {
-      { icon = "__base__/graphics/icons/constant-combinator.png", icon_size = 64, },
-      { icon = "__base__/graphics/icons/signal/signal_R.png", icon_size = 64, scale = 0.3, },
-    },
-    subgroup = "circuit-network",
-    place_result="research-combinator",
-    order = "b[combinators]-d[research-combinator]",
-    stack_size = 50,
-  }--[[@as data.ItemPrototype]],
-  }
+local meld = require('meld')
 
 ---@param name string
-local function make_recipe(name)
+local function make_cc(name, icons)
   data:extend{
+    meld.meld(table.deepcopy(data.raw["constant-combinator"]["constant-combinator"]), {
+      name = name,
+      minable = {
+        result = name,
+      },
+      created_effect = meld.overwrite{
+        type = "direct",
+        action_delivery = {
+          type = "instant",
+          source_effects = {
+            {
+              type = "script",
+              effect_id = "utility-combinator-created",
+            },
+          }
+        }
+      }
+    }),
     {
       type = "recipe",
       name = name,
-      enabled = false,
       ingredients = {
         {type="item", name="constant-combinator", amount=1},
         {type="item", name="electronic-circuit", amount=1},
@@ -76,21 +31,37 @@ local function make_recipe(name)
       results = {
         {type="item", name=name, amount=1}
       },
-    }--[[@as data.RecipePrototype]]
+    }--[[@as data.RecipePrototype]],
+    {
+      type = "item",
+      name = name,
+      icons = icons,
+      subgroup = "circuit-network",
+      place_result=name,
+      order = "b[combinators]-d["..name.."]",
+      stack_size = 50,
+    }--[[@as data.ItemPrototype]],
   }
 end
 
-make_recipe("location-combinator")
-make_recipe("bonus-combinator")
-make_recipe("research-combinator")
+make_cc("location-combinator", {
+  { icon = "__base__/graphics/icons/constant-combinator.png", icon_size = 64, },
+  { icon = "__base__/graphics/icons/signal/signal_X.png", icon_size = 64, scale = 0.25, shift = {-8,0} },
+  { icon = "__base__/graphics/icons/signal/signal_Y.png", icon_size = 64, scale = 0.25, shift = {8,0} },
+})
+make_cc("bonus-combinator", {
+  { icon = "__base__/graphics/icons/constant-combinator.png", icon_size = 64, },
+  { icon = "__base__/graphics/icons/signal/signal_B.png", icon_size = 64, scale = 0.3, },
+})
+make_cc("research-combinator", {
+  { icon = "__base__/graphics/icons/constant-combinator.png", icon_size = 64, },
+  { icon = "__base__/graphics/icons/signal/signal_R.png", icon_size = 64, scale = 0.3, },
+})
 
-local unlocks = {
+meld.meld(data.raw["technology"]["advanced-combinators"], {
+  effects = meld.append({
   {type = "unlock-recipe", recipe = "bonus-combinator"},
   {type = "unlock-recipe", recipe = "location-combinator"},
   {type = "unlock-recipe", recipe = "research-combinator"},
-}
-
-for _,unlock in pairs(unlocks) do
-  table.insert( data.raw["technology"]["advanced-combinators"].effects, unlock)
-end
-
+  })
+})
