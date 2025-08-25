@@ -8,7 +8,6 @@ local sigstr = script.active_mods["signalstrings"] and require("__signalstrings_
 ---@field public index_signal? SignalID
 ---@
 ---@field private mode PlayerCombinator.mode
----@field private mode_signal? SignalID
 ---@
 ---@field public admin? SignalID
 ---@field public afk_time? SignalID
@@ -53,7 +52,6 @@ local default_signal = {
     name = "signal-info",
     quality = "normal",
   },
-  --mode_signal = nil,
 
   admin = {
     type = "virtual",
@@ -92,7 +90,6 @@ function pcomb:load_entity_settings()
   if #conditions == 5 then
     self.index_signal = conditions[2].first_signal
     self.mode = conditions[2].constant
-    self.mode_signal = conditions[2].second_signal
 
     self.admin = conditions[3].first_signal
     self.afk_time = conditions[3].second_signal
@@ -102,7 +99,6 @@ function pcomb:load_entity_settings()
   elseif #conditions == 2 then
     self.index_signal = conditions[2].first_signal
     self.mode = conditions[2].constant
-    self.mode_signal = conditions[2].second_signal
 
     self.admin = default_signal.admin
     self.afk_time = default_signal.afk_time
@@ -112,7 +108,6 @@ function pcomb:load_entity_settings()
   else -- no config
     self.index_signal = default_signal.index_signal
     self.mode = modes.name
-    self.mode_signal = nil
 
     self.admin = default_signal.admin
     self.afk_time = default_signal.afk_time
@@ -142,7 +137,6 @@ function pcomb:save_entity_settings()
       comparator="=",
       first_signal = self.index_signal,
       first_signal_networks=no_wires,
-      second_signal = self.mode_signal,
       constant = self.mode,
       second_signal_networks=no_wires,
       compare_type = "or", -- how the config group combines with the first condition
@@ -243,10 +237,6 @@ function pcomb:on_tick()
   local param = self:load_entity_settings()
 
   local mode = self.mode
-
-  if self.mode_signal then
-    mode = self.entity.get_signal(self.mode_signal, defines.wire_connector_id.combinator_input_green, defines.wire_connector_id.combinator_input_red)
-  end
 
   local handler = mode_handlers[mode]
   if handler then
