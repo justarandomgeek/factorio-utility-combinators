@@ -1,4 +1,5 @@
 local new_pcomb = require('player-combinator')
+local gui = require('gui')
 
 ---@param signal SignalID
 ---@param value int32
@@ -142,6 +143,8 @@ local function on_init()
   ---@field researchcc {[integer]:UCControl} unit_number -> entity,control
   ---@field researchframe {[integer]:LogisticFilter[]} forceid -> data
   ---@field playercombs {[integer]:PlayerCombinator}
+  ---@field refs {[string]:LuaGuiElement} gui element references
+  ---@field opened_combinators {[integer]:PlayerCombinator} player_index -> combinator data
   storage = {
     bonuscc = {},
     bonusframe = {},
@@ -149,6 +152,8 @@ local function on_init()
     researchcc = {},
     researchframe = {},
     playercombs = {},
+    refs = {},
+    opened_combinators = {},
   }
 
   UpdateBonuses()
@@ -191,7 +196,7 @@ script.on_event(defines.events.on_tick, function()
       storage.playercombs[unit_number] = nil
     end
   end
-  --gui.on_tick()
+  gui.on_tick()
 end)
 
 script.on_event(defines.events.on_script_trigger_effect, function (event)
@@ -203,5 +208,20 @@ script.on_event(defines.events.on_script_trigger_effect, function (event)
         handler(entity)
       end
     end
+  end
+end)
+
+script.on_event(defines.events.on_gui_opened, function (event)
+  local entity = event.entity
+  if not entity then return end
+  local pcomb 
+  if entity.name == "player-combinator" then
+    pcomb =  storage.playercombs[entity.unit_number]
+  -- elseif entity.name == "entity-ghost" and entity.ghost_name == "diskreader" then
+  --   reader = get_or_create_ghost_reader(entity)
+  end
+  if pcomb then
+    local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
+    gui.open(pcomb, player)
   end
 end)

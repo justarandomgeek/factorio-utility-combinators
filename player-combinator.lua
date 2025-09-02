@@ -7,7 +7,7 @@ local sigstr = script.active_mods["signalstrings"] and require("__signalstrings_
 ---@
 ---@field public index_signal? SignalID
 ---@
----@field private mode PlayerCombinator.mode
+---@field public mode PlayerCombinator.mode
 ---@
 ---@field public admin? SignalID
 ---@field public afk_time? SignalID
