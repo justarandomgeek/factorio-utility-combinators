@@ -90,28 +90,28 @@ local function update_gui(player)
         refs.status_label.caption = custom_status.label
     else
         local status = pcomb.entity.status
-        -- if not status and not chest_stack then -- ghost
-        --     status = defines.entity_status.ghost
-        -- end
+        if not status and pcomb.is_ghost then
+            status = defines.entity_status.ghost
+        end
         refs.status_label.caption = status_names[status]
         refs.status_sprite.sprite = status_sprites[status] or "utility.status_blue"
     end
 
     if #pcomb.entity.combinator_description > 0 then
-       refs.description_subheader.visible = true
-       refs.description_label.visible = true
-       refs.description_scroll_pane.visible = true
-       refs.description_label.caption = pcomb.entity.combinator_description
-       refs.description_button.style = "mini_button_aligned_to_text_vertically"
-       refs.description_button.caption = ""
-       refs.description_button.sprite = "utility.rename_icon"
+        refs.description_subheader.visible = true
+        refs.description_label.visible = true
+        refs.description_scroll_pane.visible = true
+        refs.description_label.caption = pcomb.entity.combinator_description
+        refs.description_button.style = "mini_button_aligned_to_text_vertically"
+        refs.description_button.caption = ""
+        refs.description_button.sprite = "utility.rename_icon"
     else
-       refs.description_subheader.visible = false
-       refs.description_label.visible = false
-       refs.description_scroll_pane.visible = false
-       refs.description_button.style = "button"
-       refs.description_button.caption = {"gui-edit-label.add-description"}
-       refs.description_button.sprite = nil
+        refs.description_subheader.visible = false
+        refs.description_label.visible = false
+        refs.description_scroll_pane.visible = false
+        refs.description_button.style = "button"
+        refs.description_button.caption = {"gui-edit-label.add-description"}
+        refs.description_button.sprite = nil
     end
 end
 

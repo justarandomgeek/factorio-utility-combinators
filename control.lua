@@ -143,6 +143,7 @@ local function on_init()
   ---@field researchcc {[integer]:UCControl} unit_number -> entity,control
   ---@field researchframe {[integer]:LogisticFilter[]} forceid -> data
   ---@field playercombs {[integer]:PlayerCombinator}
+  ---@field playercomb_ghosts {[integer]:PlayerCombinator}
   ---@field refs {[string]:LuaGuiElement} gui element references
   ---@field opened_combinators {[integer]:PlayerCombinator} player_index -> combinator data
   storage = {
@@ -152,6 +153,7 @@ local function on_init()
     researchcc = {},
     researchframe = {},
     playercombs = {},
+    playercomb_ghosts = {},
     refs = {},
     opened_combinators = {},
   }
@@ -173,7 +175,7 @@ end
 
 script.on_init(on_init)
 script.on_configuration_changed(function(data)
-  if data.mod_changes and data.mod_changes["utility-combinators"] then
+  if __DebugAdapter or data.mod_changes and data.mod_changes["utility-combinators"] then
     on_init()
   end
 end)
@@ -187,15 +189,21 @@ script.on_nth_tick(60, function()
   end
 end)
 
-script.on_event(defines.events.on_tick, function()
-  for unit_number, pcomb in pairs(storage.playercombs) do
-    if pcomb:valid() then
-      pcomb:on_tick()
+---@param collection {[integer?]:{ valid:(fun():boolean), (on_tick:fun()), (destroy:fun())  }}
+local function tick_or_cleanup(collection)
+  for unit_number, obj in pairs(collection) do
+    if obj:valid() then
+      obj:on_tick()
     else
-      pcomb:destroy()
-      storage.playercombs[unit_number] = nil
+      obj:destroy()
+      collection[unit_number] = nil
     end
   end
+end
+
+script.on_event(defines.events.on_tick, function()
+  tick_or_cleanup(storage.playercombs)
+  tick_or_cleanup(storage.playercomb_ghosts)
   gui.on_tick()
 end)
 
@@ -211,14 +219,27 @@ script.on_event(defines.events.on_script_trigger_effect, function (event)
   end
 end)
 
+---@generic T
+---@param entity LuaEntity
+---@param ghost_storage table<integer,T>
+---@return T
+local function get_or_create_ghost(entity, ghost_storage)
+  local ghost = ghost_storage[entity.unit_number]
+  if not ghost then
+    ghost = new_pcomb(entity)
+    ghost_storage[entity.unit_number] = ghost
+  end
+  return ghost
+end
+
 script.on_event(defines.events.on_gui_opened, function (event)
   local entity = event.entity
   if not entity then return end
   local pcomb 
   if entity.name == "player-combinator" then
     pcomb =  storage.playercombs[entity.unit_number]
-  -- elseif entity.name == "entity-ghost" and entity.ghost_name == "diskreader" then
-  --   reader = get_or_create_ghost_reader(entity)
+  elseif entity.name == "entity-ghost" and entity.ghost_name == "player-combinator" then
+    pcomb = get_or_create_ghost(entity, storage.playercomb_ghosts)
   end
   if pcomb then
     local player = game.get_player(event.player_index) --[[@as LuaPlayer]]

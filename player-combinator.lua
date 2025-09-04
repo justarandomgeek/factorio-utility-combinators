@@ -4,6 +4,7 @@ local sigstr = script.active_mods["signalstrings"] and require("__signalstrings_
 ---@field public entity LuaEntity
 ---@field private unit_number integer
 ---@field public control LuaDeciderCombinatorControlBehavior
+---@field public is_ghost? boolean
 ---@
 ---@field public index_signal? SignalID
 ---@
@@ -34,6 +35,7 @@ local function new(ent)
     entity = ent,
     unit_number = ent.unit_number,
     control = control,
+    is_ghost = ent.name == "entity-ghost"
   }, pcomb_meta)
   control.parameters = self:load_entity_settings()
   return self
@@ -239,7 +241,7 @@ function pcomb:on_tick()
   local mode = self.mode
 
   local handler = mode_handlers[mode]
-  if handler then
+  if (not self.is_ghost) and handler then
     param.outputs = handler(self) or {}
   else
     param.outputs = {}
