@@ -19,6 +19,11 @@ local status_sprites = {
     [defines.entity_status.ghost] = "utility.status_yellow",
 }
 
+local mode_description = {
+    {"player-combinator-gui.name_mode_description"},
+    {"player-combinator-gui.metadata_mode_description"}
+}
+
 local handlers = {}
 
 ---@param player LuaPlayer
@@ -37,6 +42,7 @@ local function update_gui(player)
     local control = pcomb.control
 
     refs.mode_dropdown.selected_index = pcomb.mode
+    refs.mode_description.caption = mode_description[pcomb.mode]
 
     refs.metadata_signals_flow.visible = pcomb.mode == 2
 
