@@ -189,7 +189,7 @@ script.on_nth_tick(60, function()
   end
 end)
 
----@param collection {[integer?]:{ valid:(fun():boolean), (on_tick:fun()), (destroy:fun())  }}
+---@param collection {[integer?]:{ valid:(fun(self:self):boolean), (on_tick:fun(self:self)), (destroy:fun(self:self))  }}
 local function tick_or_cleanup(collection)
   for unit_number, obj in pairs(collection) do
     if obj:valid() then
