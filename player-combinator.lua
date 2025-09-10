@@ -204,6 +204,7 @@ local mode_handlers = {
     local entity = self.entity
     if not self.index_signal then return end
     local index = entity.get_signal(self.index_signal, defines.wire_connector_id.combinator_input_green, defines.wire_connector_id.combinator_input_red)
+    if index <= 0 or index >= 65536 then return end
     local player = game.get_player(index)
     if not player then return end
 
