@@ -24,6 +24,7 @@ local function make_cc(name, icons)
     {
       type = "recipe",
       name = name,
+      enabled = false,
       ingredients = {
         {type="item", name="constant-combinator", amount=1},
         {type="item", name="electronic-circuit", amount=1},
@@ -58,6 +59,7 @@ local function make_dc(name, icons)
     {
       type = "recipe",
       name = name,
+      enabled = false,
       energy_required = 1,
       ingredients = {
         { type="item", name="advanced-circuit", amount=2 },
