@@ -7,7 +7,7 @@
   "homepage": "",
   "contact": "justarandomgeek@gmail.com",
   "description": "A set of general utility combinators. Includes: Location Combinators, Bonus Combinators, Research Combinators",
-  "dependencies": ["base"],
+  "dependencies": ["base", "glib", "? signalstrings"],
   "package": {
     "sync_portal_details": true
   }
