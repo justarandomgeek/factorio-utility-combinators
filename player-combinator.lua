@@ -192,6 +192,7 @@ end
 ---@type {[PlayerCombinator.mode]:fun(self:PlayerCombinator):DeciderCombinatorOutput[]?}
 local mode_handlers = {
   [modes.name] = function(self)
+    if not sigstr then return end
     local entity = self.entity
     if not self.index_signal then return end
     local index = entity.get_signal(self.index_signal, defines.wire_connector_id.combinator_input_green, defines.wire_connector_id.combinator_input_red)
